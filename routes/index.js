@@ -5,7 +5,7 @@ const r2 = require("r2");
 /* GET home page. */
 router.get("/", async function(req, res, next) {
 	const data = await loadData();
-	res.render("index", { title: "Express", data: data });
+	res.render("index", { title: "Express", data: JSON.stringify(data) });
 });
 
 async function loadData() {
