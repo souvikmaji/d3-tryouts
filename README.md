@@ -17,3 +17,4 @@ npm run dev-start
 1. show time series data via d3
 2. basic page style
 3. use arrow functions
+4. use common layout file
