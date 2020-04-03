@@ -10,7 +10,7 @@ router.get("/", function(req, res) {
 /* GET timeseries data */
 router.get("/timeseries", async function(req, res) {
 	const data = await loadTimeSeriesData();
-	res.json(data);
+	res.json(data.cases_time_series);
 });
 
 // TODO: move somewhere else
