@@ -1,4 +1,4 @@
-# Covid Dashboard
+# D3
 
 ## Configurations
 
