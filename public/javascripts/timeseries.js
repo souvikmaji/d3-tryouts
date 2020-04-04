@@ -7,21 +7,12 @@ var margin = {
 	width = 1000 - margin.left - margin.right,
 	height = 500 - margin.top - margin.bottom;
 
-// add the SVG element TODO: come back
-var svg = d3.select("#timeseries").append("svg")
-	.attr("width", width + margin.left + margin.right)
-	.attr("height", height + margin.top + margin.bottom)
-	.append("g")
-	.attr("transform",
-		"translate(" + margin.left + "," + margin.top + ")");
-
-
 d3.json("/timeseries").then((data) => {
 	data.map(function (d) {
 		d.dailyconfirmed = +d.dailyconfirmed;
 		return d;
 	});
-	return Object.assign(data,  {format: "%", y: "↑ Frequency"});
+	return Object.assign(data,  {format: "%", y: "↑ Confirmed Cases"});
 }).then((data) => {
 
 	// set the ranges
@@ -43,7 +34,6 @@ d3.json("/timeseries").then((data) => {
 		.attr("transform", `translate(0,${height - margin.bottom})`)
 		.call(d3.axisBottom(x).tickFormat(i => i).tickSizeOuter(0));
 
-
 	var yAxis = g => g
 		.attr("transform", `translate(${margin.left},0)`)
 		.call(d3.axisLeft(y))
@@ -54,6 +44,26 @@ d3.json("/timeseries").then((data) => {
 			.attr("fill", "currentColor")
 			.attr("text-anchor", "start")
 			.text(data.y));
+
+	// add the SVG element TODO: come back
+	var svg = d3.select("#timeseries").append("svg")
+		.attr("width", width + margin.left + margin.right)
+		.attr("height", height + margin.top + margin.bottom)
+		.append("g")
+		.attr("transform",
+			"translate(" + margin.left + "," + margin.top + ")")
+		.call(zoom);
+
+	svg.append("g")
+		.attr("class", "bars")
+		.attr("fill", "steelblue")
+		.selectAll("rect")
+		.data(data)
+		.join("rect")
+		.attr("x", d => x(d.date))
+		.attr("y", d => y(d.dailyconfirmed))
+		.attr("height", d => y(0) - y(d.dailyconfirmed))
+		.attr("width", x.bandwidth());
 
 	// add axis
 	svg.append("g")
@@ -66,24 +76,26 @@ d3.json("/timeseries").then((data) => {
 		.attr("dy", "-.55em")
 		.attr("transform", "rotate(-90)");
 
-
 	svg.append("g")
 		.call(yAxis);
 
-	svg.append("g")
-		.attr("fill", "steelblue")
-		.selectAll("rect")
-		.data(data)
-		.join("rect")
-		.attr("x", d => x(d.date))
-		.attr("y", d => y(d.dailyconfirmed))
-		.attr("height", d => y(0) - y(d.dailyconfirmed))
-		.attr("width", x.bandwidth());
+	function zoom(svg) {
+		const extent = [[margin.left, margin.top], [width - margin.right, height - margin.top]];
+
+		svg.call(d3.zoom()
+			.scaleExtent([1, 8])
+			.translateExtent(extent)
+			.extent(extent)
+			.on("zoom", zoomed));
+
+		function zoomed() {
+			x.range([margin.left, width - margin.right].map(d => d3.event.transform.applyX(d)));
+			svg.selectAll(".bars rect").attr("x", d => x(d.date)).attr("width", x.bandwidth());
+			svg.selectAll(".x-axis").call(xAxis);
+		}
+	}
+
 
 }).catch(function (error) {
 	console.log(error);
 });
-
-
-
-console.log("last");
