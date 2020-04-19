@@ -2,16 +2,16 @@ var margin = {
 	top: 30,
 	right: 10,
 	bottom: 30,
-	left: 30
+	left: 65
 };
 
 var	width = 1000 - margin.left - margin.right;
-var barSize = 30;
-var n = 38;
+var barSize = 25;
+var n = 386;
 var k = 10;
-var	height =  margin.top + barSize * n + margin.bottom;
+var	height = 390;// margin.top + barSize * n/2 + margin.bottom;
 
-var duration = 250;
+var duration = 200;
 
 var stateCodes = d3.map({"AP": "Andhra Pradesh", "AR": "Arunachal Pradesh", "AS": "Assam", "BR": "Bihar", "CT": "Chhattisgarh", "GA": "Goa", "GJ": "Gujarat", "ML": "Meghalaya",
 	"MZ": "Mizoram", "HR": "Haryana", "HP": "Himachal Pradesh", "JH": "Jharkhand", "KA": "Karnataka", "KL": "Kerala", "MP": "Madhya Pradesh", "MH": "Maharashtra", "MN": "Manipur",
@@ -112,7 +112,7 @@ d3.csv("/statewise-daily-confirmed").then((data) => {
 		const data = Array.from(names, name => ({name, value: value(name)}));
 		data.sort((a, b) => d3.descending(a.value, b.value));
 		for (let i = 0; i < data.length; ++i) data[i].rank = Math.min(n, i);
-		return data;
+		return data.filter(d => d.value !== 0);
 	}
 
 	function bars(svg) {
@@ -178,7 +178,7 @@ d3.csv("/statewise-daily-confirmed").then((data) => {
 		const axis = d3.axisTop(x)
 			.ticks(width / 160)
 			.tickSizeOuter(0)
-			.tickSizeInner(-barSize * (n + y.padding()));
+			.tickSizeInner(-height);
 
 		return (_, transition) => {
 			g.transition(transition).call(axis);
@@ -195,7 +195,7 @@ d3.csv("/statewise-daily-confirmed").then((data) => {
 			.style("font-variant-numeric", "tabular-nums")
 			.attr("text-anchor", "end")
 			.attr("x", width - 6)
-			.attr("y", margin.top + barSize * (n - 0.45))
+			.attr("y", height - 10)
 			.attr("dy", "0.32em")
 			.text(formatDate(keyframes[0][0]));
 
