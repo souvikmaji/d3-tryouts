@@ -13,6 +13,20 @@ var	height =  margin.top + barSize * n + margin.bottom;
 
 var duration = 250;
 
+var stateCodes = d3.map({"AP": "Andhra Pradesh", "AR": "Arunachal Pradesh", "AS": "Assam", "BR": "Bihar", "CT": "Chhattisgarh", "GA": "Goa", "GJ": "Gujarat", "ML": "Meghalaya",
+	"MZ": "Mizoram", "HR": "Haryana", "HP": "Himachal Pradesh", "JH": "Jharkhand", "KA": "Karnataka", "KL": "Kerala", "MP": "Madhya Pradesh", "MH": "Maharashtra", "MN": "Manipur",
+	"NL": "Nagaland", "OR": "Odisha", "PB": "Punjab", "RJ": "Rajasthan", "SK": "Sikkim", "TN": "Tamil Nadu", "TG": "Telangana", "TR": "Tripura", "UT": "Uttarakhand", "UP": "Uttar Pradesh",
+	"WB": "West Bengal", "AN": "Andaman and Nicobar", "CH": "Chandigarh", "DN": "Dadra and Nagar Haveli", "DD": "Daman and Diu", "DL": "Delhi", "JK": "Jammu and Kashmir", "LA": "Ladakh",
+	"LD": "Lakshadweep", "PY": "Puducherry"});
+
+function getStateName(code) {
+	const name = stateCodes.get(code);
+	if(name !== undefined){
+		return name;
+	}
+	return code;
+}
+
 var formatDate = d3.utcFormat("%d %B");
 var formatNumber = d3.format(",d");
 
@@ -141,7 +155,7 @@ d3.csv("/statewise-daily-confirmed").then((data) => {
 					.attr("x", -6)
 					.attr("dy", "-0.25em")
 					.attr("font-size", `${barSize/2 - 5}px`)
-					.text(d => d.name)
+					.text(d => getStateName(d.name)) //TODO: if overflow show code only
 					.call(text => text.append("tspan")
 						.attr("fill-opacity", 0.7)
 						.attr("font-weight", "normal")
